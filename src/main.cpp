@@ -5,15 +5,20 @@
 
 int main () {
 	AVLTree *tree;
-	tree = new AVLTree (NULL, 8, NULL);
-	tree = tree->insert (5);
-	tree = tree->insert (3);
-	tree = tree->insert (4);
-	tree = tree->insert (1);
-	tree = tree->insert (2);
-
-
+	tree = new AVLTree (NULL, 15, NULL);
 	tree->print(0);
+	printf("\n");
+	for (int i = 6; i >= 0; i--) {
+		tree = tree->insert (i*2 + 1);
+		tree->print(0);
+		printf("\n");
+	}
+	tree = tree->insert (2);
+	tree->print(0);
+	printf("\n");
+	tree = tree->insert (4);
+	tree->print(0);
+	printf("\n");
 
 	delete (tree);
 	return 0;
