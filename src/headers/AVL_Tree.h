@@ -48,6 +48,9 @@ private:
 	· Returns the root of the new balanced tree*/
 	AVLTree* balance ();
 
+	/* height
+	· Returns the height of the tree t. If t is NULL returns 0.*/
+	int getHeight (AVLTree* t);
 
 };
 

@@ -8,6 +8,9 @@ int main () {
 	tree = new AVLTree (NULL, 8, NULL);
 	tree = tree->insert (5);
 	tree = tree->insert (3);
+	tree = tree->insert (4);
+	tree = tree->insert (1);
+	tree = tree->insert (2);
 
 
 	tree->print(0);

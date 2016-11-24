@@ -62,8 +62,9 @@ AVLTree* AVLTree::insert (int x) {
 
 	}else {	//If the child is not NULL inserts the value x in the child, and then balances the child.
 		ret = (*tgt)->insert(x);
-		ret = ret->balance();
+		ret = balance();
 	}
+	height = maxHeight (left, right) + 1;
 	return ret;
 }
 
@@ -86,11 +87,9 @@ void AVLTree::print(int level) {
 /* maxHeight
 · Returns the height of the heighest tree*/
 int AVLTree::maxHeight (AVLTree *t1, AVLTree *t2) {
-	int h1 = 0, h2 = 0; //The heights of each tree
-	if (t1 != NULL) //If the tree is NULL the the height is 0
-		h1 = t1->height;
-	if (t2 != NULL)
-		h2 = t2->height;
+	int h1, h2;
+	h1 = getHeight (t1);
+	h2 = getHeight (t2);
 
 	if (h1 > h2)
 		return h1; //Returns the heighest value
@@ -104,14 +103,12 @@ int AVLTree::maxHeight (AVLTree *t1, AVLTree *t2) {
 AVLTree* AVLTree::balance () {
 	AVLTree *root = this;
 
-	int hl = 0, hr = 0;
-	if (left != NULL)
-		hl = left->height;
-	if (right != NULL)
-		hr = right->height;
+	int hl, hr;
+	hl = getHeight (left);	//The height of the left child of this tree
+	hr = getHeight (right);	//The height of the right child of this tree
 
-	if (hl - hr > 1) {
-		if (right->height == left->left->height) { //LR
+	if (hl - hr > 1) { //If the left child is 2 nodes, or more, higher than the right child, a left rotation is required
+		if (hr == getHeight(left->left)) { //LR rotation
 			root = left->right;
 			left->right = root->left;
 			root->left =left;
@@ -119,15 +116,15 @@ AVLTree* AVLTree::balance () {
 			root->right = this;
 
 		}
-		else {	//LL
+		else {	//LL rotation
 			root = left;
 			left = root->right;
 			root->right = this;
 
 		}
 	}
-	else if (hl - hr < -1) {
-		if (left->height == right->right->height) { //RL
+	else if (hl - hr < -1) { //If the right child is 2 nodes, or more, higher than the left child, a right rotation is required
+		if (hl == getHeight(right->right)) { //RL
 			root = right->left;
 			right->left = root->right;
 			root->right =right;
@@ -141,4 +138,14 @@ AVLTree* AVLTree::balance () {
 		}
 	}
 	return root;
+
+}
+
+/* height
+· Returns the height of the tree t. If t is NULL returns 0.*/
+int AVLTree::getHeight (AVLTree* t) {
+	if (t == NULL)
+		return 0;
+	else
+		return t->height;
 }
