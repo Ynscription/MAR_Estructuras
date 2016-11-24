@@ -1,6 +1,8 @@
 #include <stdlib.h>
 #include "AVL_Tree.h"
 
+#include <stdio.h>
+
 /* FIELDS
 int value; //The value of this tree.
 
@@ -44,8 +46,9 @@ AVLTree* AVLTree::copy () {
 
 /* insert
 · Inserts the element x into the tree as a new node, returning the success of the operation.
+· If the root of this tree changed in position, the new root will be written to root.
 · Returns -1 if the element x was already in the tree, or 0 otherwise.*/
-int AVLTree::insert (int x) {
+int AVLTree::insert (int x, AVLTree *root) {
 	AVLTree **tgt;
 
 	if (x == value) //If the value of x is already in the tree, does nothing, and returns -1.
@@ -59,11 +62,21 @@ int AVLTree::insert (int x) {
 		*tgt = new AVLTree (NULL, x, NULL);
 
 	}else {	//If the child is not NULL inserts the value x in the child, and then balances the child.
-		(*tgt)->insert(x);
-		(*tgt)->balance();
+		(*tgt)->insert(x, *tgt);
+		(*tgt)->balance(root);
 	}
 }
 
+//TODO DELETE THIS!!!!!!!!
+/* print
+· Prints the tree to console*/
+void AVLTree::print(int level) {
+	printf("%d: {%d}\n", level, value);
+	if (left != NULL)
+		left->print (level+1);
+	if (right != NULL)
+		right->print (level+1);
+}
 
 
 
@@ -87,6 +100,37 @@ int AVLTree::maxHeight (AVLTree *t1, AVLTree *t2) {
 
 /* balance
 · Balances the tree according to AVL invariants*/
-void AVLTree::balance () {
+void AVLTree::balance (AVLTree *root) {
+	if (left->height - right->height > 1) {
+		if (right->height == left->left->height) { //LR
+			root = left->right;
+			left->right = root->left;
+			root->left =left;
+			left = root->right;
+			root->right = this;
 
+		}
+		else {	//LL
+			root = left;
+			left = root->right;
+			root->right = this;
+
+		}
+	}
+	else if (left->height - right->height < -1) {
+		if (left->height == right->right->height) { //RL
+			root = right->left;
+			right->left = root->right;
+			root->right =right;
+			right = root->left;
+			root->left = this;
+		}
+		else { //RR
+			root = right;
+			right = root->left;
+			root->left = this;
+		}
+	}
+	else
+		return;
 }

@@ -26,12 +26,16 @@ public:
 	/* insert
 	· Inserts the element x into the tree as a new node, returning the success of the operation.
 	· Returns -1 if the element x was already in the tree, or 0 otherwise.*/
-	int insert (int x);
+	int insert (int x, AVLTree *root);
 
 	/* remove
 	· Removess the element x from the tree and its node, returning the success of the operation.
 	· Returns -1 if the element x was not found in the tree, or 0 otherwise*/
 	int remove (int x);
+
+	/* print
+	· Prints the tree to console*/
+	void print(int level);
 
 private:
 	/* maxHeight
@@ -41,7 +45,7 @@ private:
 
 	/* balance
 	· Balances the tree according to AVL invariants*/
-	void balance ();
+	void balance (AVLTree *root);
 
 
 };
