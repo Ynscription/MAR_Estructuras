@@ -47,21 +47,20 @@ AVLTree* AVLTree::copy () {
 · Returns -1 if the element x was already in the tree, or 0 otherwise.*/
 int AVLTree::insert (int x) {
 	AVLTree **tgt;
-	AVLTree *temp;
 
 	if (x == value) //If the value of x is already in the tree, does nothing, and returns -1.
 		return -1;
 	else if (x > value) //If the value of x is greater than the value of this tree, then it must be inserted in the right child
-		*tgt = right;
+		tgt = &right;
 	else 	//Otherwise the value of x is smaller than the value of this tree, so it must be inserted in the left child
-		tgt = left;
+		tgt = &left;
 
-	if (tgt == NULL) { //If the child is NULL then creates a new child with value x
-		temp = new AVLTree (NULL, x, NULL);
+	if (*tgt == NULL) { //If the child is NULL then creates a new child with value x
+		*tgt = new AVLTree (NULL, x, NULL);
 
 	}else {	//If the child is not NULL inserts the value x in the child, and then balances the child.
-		*tgt->insert(x);
-		*tgt->balance();
+		(*tgt)->insert(x);
+		(*tgt)->balance();
 	}
 }
 
@@ -84,4 +83,10 @@ int AVLTree::maxHeight (AVLTree *t1, AVLTree *t2) {
 		return h1; //Returns the heighest value
 	else
 		return h2;
+}
+
+/* balance
+· Balances the tree according to AVL invariants*/
+void AVLTree::balance () {
+
 }
