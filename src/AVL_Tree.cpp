@@ -45,26 +45,26 @@ AVLTree* AVLTree::copy () {
 }
 
 /* insert
-· Inserts the element x into the tree as a new node, returning the success of the operation.
-· If the root of this tree changed in position, the new root will be written to root.
-· Returns -1 if the element x was already in the tree, or 0 otherwise.*/
-int AVLTree::insert (int x, AVLTree *root) {
+· Inserts the element x into the tree as a new node, the new tree balanced.
+· Returns the new tree, or NULL if the element x was already present in the tree.*/
+AVLTree* AVLTree::insert (int x) {
 	AVLTree **tgt;
+	AVLTree* ret = NULL;
 
-	if (x == value) //If the value of x is already in the tree, does nothing, and returns -1.
-		return -1;
-	else if (x > value) //If the value of x is greater than the value of this tree, then it must be inserted in the right child
+	if (x > value) //If the value of x is greater than the value of this tree, then it must be inserted in the right child
 		tgt = &right;
-	else 	//Otherwise the value of x is smaller than the value of this tree, so it must be inserted in the left child
+	else if (x < value)	//Otherwise the value of x is smaller than the value of this tree, so it must be inserted in the left child
 		tgt = &left;
 
 	if (*tgt == NULL) { //If the child is NULL then creates a new child with value x
 		*tgt = new AVLTree (NULL, x, NULL);
+		ret = this;
 
 	}else {	//If the child is not NULL inserts the value x in the child, and then balances the child.
-		(*tgt)->insert(x, *tgt);
-		(*tgt)->balance(root);
+		ret = (*tgt)->insert(x);
+		ret = ret->balance();
 	}
+	return ret;
 }
 
 //TODO DELETE THIS!!!!!!!!
@@ -99,9 +99,18 @@ int AVLTree::maxHeight (AVLTree *t1, AVLTree *t2) {
 }
 
 /* balance
-· Balances the tree according to AVL invariants*/
-void AVLTree::balance (AVLTree *root) {
-	if (left->height - right->height > 1) {
+· Balances the tree according to AVL invariants.
+· Returns the root of the new balanced tree*/
+AVLTree* AVLTree::balance () {
+	AVLTree *root = this;
+
+	int hl = 0, hr = 0;
+	if (left != NULL)
+		hl = left->height;
+	if (right != NULL)
+		hr = right->height;
+
+	if (hl - hr > 1) {
 		if (right->height == left->left->height) { //LR
 			root = left->right;
 			left->right = root->left;
@@ -117,7 +126,7 @@ void AVLTree::balance (AVLTree *root) {
 
 		}
 	}
-	else if (left->height - right->height < -1) {
+	else if (hl - hr < -1) {
 		if (left->height == right->right->height) { //RL
 			root = right->left;
 			right->left = root->right;
@@ -131,6 +140,5 @@ void AVLTree::balance (AVLTree *root) {
 			root->left = this;
 		}
 	}
-	else
-		return;
+	return root;
 }

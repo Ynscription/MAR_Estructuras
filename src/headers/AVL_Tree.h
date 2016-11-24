@@ -24,9 +24,9 @@ public:
 	AVLTree* copy ();
 
 	/* insert
-	· Inserts the element x into the tree as a new node, returning the success of the operation.
-	· Returns -1 if the element x was already in the tree, or 0 otherwise.*/
-	int insert (int x, AVLTree *root);
+	· Inserts the element x into the tree as a new node, the new tree balanced.
+	· Returns the new tree, or NULL if the element x was already present in the tree.*/
+	AVLTree* insert (int x);
 
 	/* remove
 	· Removess the element x from the tree and its node, returning the success of the operation.
@@ -44,8 +44,9 @@ private:
 
 
 	/* balance
-	· Balances the tree according to AVL invariants*/
-	void balance (AVLTree *root);
+	· Balances the tree according to AVL invariants.
+	· Returns the root of the new balanced tree*/
+	AVLTree* balance ();
 
 
 };

@@ -6,7 +6,9 @@
 int main () {
 	AVLTree *tree;
 	tree = new AVLTree (NULL, 8, NULL);
-	tree->insert (5, tree);
+	tree = tree->insert (5);
+	tree = tree->insert (3);
+
 
 	tree->print(0);
 
