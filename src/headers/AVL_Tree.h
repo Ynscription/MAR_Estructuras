@@ -38,15 +38,16 @@ public:
 	void print(int level);
 
 private:
-	/* maxHeight
-	· Returns the height of the heighest tree*/
-	int maxHeight (AVLTree *t1, AVLTree *t2);
-
+	int moved; //Flag to determine if this node was moved during balancing, to recalculate its height.
 
 	/* balance
 	· Balances the tree according to AVL invariants.
 	· Returns the root of the new balanced tree*/
 	AVLTree* balance ();
+
+	/* maxHeight
+	· Returns the height of the heighest tree*/
+	int maxHeight (AVLTree *t1, AVLTree *t2);
 
 	/* height
 	· Returns the height of the tree t. If t is NULL returns 0.*/

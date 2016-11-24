@@ -20,6 +20,7 @@ AVLTree::AVLTree (AVLTree *l, int x, AVLTree *r) {
 	right = r;
 	value = x;
 	height = maxHeight (l, r) + 1; //The height of this tree is that of the heighest child + 1 for this level
+	moved = 0;
 }
 /*Destructor
 · Destructor frees all memory of this tree recursively, effectively destroying it and all of its children.*/
@@ -61,7 +62,7 @@ AVLTree* AVLTree::insert (int x) {
 		ret = this;
 
 	}else {	//If the child is not NULL inserts the value x in the child, and then balances the child.
-		ret = (*tgt)->insert(x);
+		*tgt = (*tgt)->insert(x);
 		ret = balance();
 	}
 	height = maxHeight (left, right) + 1;
@@ -72,7 +73,7 @@ AVLTree* AVLTree::insert (int x) {
 /* print
 · Prints the tree to console*/
 void AVLTree::print(int level) {
-	printf("%d: {%d}\n", level, value);
+	printf("%d: {%d}, h: %d\n", level, value, height);
 	if (left != NULL)
 		left->print (level+1);
 	if (right != NULL)
@@ -84,19 +85,6 @@ void AVLTree::print(int level) {
 
 
 // PRIVATE
-/* maxHeight
-· Returns the height of the heighest tree*/
-int AVLTree::maxHeight (AVLTree *t1, AVLTree *t2) {
-	int h1, h2;
-	h1 = getHeight (t1);
-	h2 = getHeight (t2);
-
-	if (h1 > h2)
-		return h1; //Returns the heighest value
-	else
-		return h2;
-}
-
 /* balance
 · Balances the tree according to AVL invariants.
 · Returns the root of the new balanced tree*/
@@ -115,11 +103,20 @@ AVLTree* AVLTree::balance () {
 			left = root->right;
 			root->right = this;
 
+			//Set the moved flags to 1 in order to update the height.
+			root->moved = 1;
+			root->left->moved = 1;
+			root->right->moved = 1;
+
 		}
 		else {	//LL rotation
 			root = left;
 			left = root->right;
 			root->right = this;
+
+			//Set the moved flags to 1 in order to update the height.
+			root->moved = 1;
+			root->right->moved = 1;
 
 		}
 	}
@@ -130,15 +127,37 @@ AVLTree* AVLTree::balance () {
 			root->right =right;
 			right = root->left;
 			root->left = this;
+
+			//Set the moved flags to 1 in order to update the height.
+			root->moved = 1;
+			root->left->moved = 1;
+			root->right->moved = 1;
 		}
 		else { //RR
 			root = right;
 			right = root->left;
 			root->left = this;
+
+			//Set the moved flags to 1 in order to update the height.
+			root->moved = 1;
+			root->left->moved = 1;
 		}
 	}
 	return root;
 
+}
+
+/* maxHeight
+· Returns the height of the heighest tree*/
+int AVLTree::maxHeight (AVLTree *t1, AVLTree *t2) {
+	int h1, h2;
+	h1 = getHeight (t1);
+	h2 = getHeight (t2);
+
+	if (h1 > h2)
+		return h1; //Returns the heighest value
+	else
+		return h2;
 }
 
 /* height
@@ -146,6 +165,9 @@ AVLTree* AVLTree::balance () {
 int AVLTree::getHeight (AVLTree* t) {
 	if (t == NULL)
 		return 0;
-	else
-		return t->height;
+	if (t->moved) {
+		t->height = maxHeight (t->left, t->right) + 1;
+		t->moved = 0;
+	}
+	return t->height;
 }
