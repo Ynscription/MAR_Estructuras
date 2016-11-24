@@ -21,17 +21,17 @@ public:
 
 	/* copy
 	· Returns an independent copy of this tree. Useful, since deleting a tree will delete all references to it*/
-	*AVLTree copy ();
+	AVLTree* copy ();
 
 	/* insert
 	· Inserts the element x into the tree as a new node, returning the success of the operation.
 	· Returns -1 if the element x was already in the tree, or 0 otherwise.*/
 	int insert (int x);
 
-	/* delete
-	· Deletes the element x from the tree and its node, returning the success of the operation.
+	/* remove
+	· Removess the element x from the tree and its node, returning the success of the operation.
 	· Returns -1 if the element x was not found in the tree, or 0 otherwise*/
-	int delete (int x);
+	int remove (int x);
 
 private:
 	/* maxHeight

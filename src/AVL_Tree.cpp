@@ -1,4 +1,5 @@
-#include "avl_tree.h"
+#include <stdlib.h>
+#include "AVL_Tree.h"
 
 /* FIELDS
 int value; //The value of this tree.
@@ -29,7 +30,7 @@ AVLTree::~AVLTree () {
 
 /*Copy
 · Returns an independent copy of this tree. Useful, since deleting a tree will delete all references to it*/
-*AVLTree copy () {
+AVLTree* AVLTree::copy () {
 	AVLTree *l = NULL; //The left child of the new tree
 	if (left != NULL) //If the left child is NULL we can not copy it
 		l = left-> copy();
@@ -44,8 +45,24 @@ AVLTree::~AVLTree () {
 /* insert
 · Inserts the element x into the tree as a new node, returning the success of the operation.
 · Returns -1 if the element x was already in the tree, or 0 otherwise.*/
-int insert (int x) {
-	
+int AVLTree::insert (int x) {
+	AVLTree **tgt;
+	AVLTree *temp;
+
+	if (x == value) //If the value of x is already in the tree, does nothing, and returns -1.
+		return -1;
+	else if (x > value) //If the value of x is greater than the value of this tree, then it must be inserted in the right child
+		*tgt = right;
+	else 	//Otherwise the value of x is smaller than the value of this tree, so it must be inserted in the left child
+		tgt = left;
+
+	if (tgt == NULL) { //If the child is NULL then creates a new child with value x
+		temp = new AVLTree (NULL, x, NULL);
+
+	}else {	//If the child is not NULL inserts the value x in the child, and then balances the child.
+		*tgt->insert(x);
+		*tgt->balance();
+	}
 }
 
 
@@ -56,7 +73,7 @@ int insert (int x) {
 // PRIVATE
 /* maxHeight
 · Returns the height of the heighest tree*/
-int maxHeight (AVLTree *t1, AVLTree *t2) {
+int AVLTree::maxHeight (AVLTree *t1, AVLTree *t2) {
 	int h1 = 0, h2 = 0; //The heights of each tree
 	if (t1 != NULL) //If the tree is NULL the the height is 0
 		h1 = t1->height;
