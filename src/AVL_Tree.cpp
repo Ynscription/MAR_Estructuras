@@ -69,6 +69,42 @@ AVLTree* AVLTree::insert (int x) {
 	return ret;
 }
 
+/* remove
+· Removess the element x from the tree and its node, returning the success of the operation.
+· Returns -1 if the element x was not found in the tree, or 0 otherwise*/
+AVLTree* AVLTree::remove (int x) {
+	AVLTree* ret = this;
+	AVLTree** tgt;
+	*tgt = NULL;
+	if (x < value)
+		tgt = &left;
+	else if (x > value)
+		tgt = &right;
+	else {
+		if (right == NULL) {
+			ret = left;
+			left = NULL;
+		}else if (left == NULL){
+			ret = right;
+			right = NULL;
+		}else {
+			AVLTree* l = left;
+			AVLTree* r = right;
+			left = NULL;
+			right = NULL;
+			ret = removeMin(l, r);
+		}
+		delete (this);
+		return ret;
+	}
+
+	if (*tgt  != NULL){
+		*tgt = (*tgt)->remove(x);
+		ret = balance();
+	}
+	return ret;
+}
+
 //TODO DELETE THIS!!!!!!!! (Or make it properly with a queue, whatever suits.)
 /* print
 · Prints the tree to console*/
@@ -79,9 +115,6 @@ void AVLTree::print(int level) {
 	if (right != NULL)
 		right->print (level+1);
 }
-
-
-
 
 
 // PRIVATE
@@ -144,6 +177,13 @@ AVLTree* AVLTree::balance () {
 		}
 	}
 	return root;
+
+}
+
+/* removeMin
+· Recursively reassigns children of the tree t when deleting nodes.
+· Returns the root of the new tree.*/
+AVLTree* AVLTree::removeMin(AVLTree *l, AVLTree *r) {
 
 }
 

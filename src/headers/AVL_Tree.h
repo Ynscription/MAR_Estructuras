@@ -31,7 +31,7 @@ public:
 	/* remove
 	· Removess the element x from the tree and its node, returning the success of the operation.
 	· Returns -1 if the element x was not found in the tree, or 0 otherwise*/
-	int remove (int x);
+	AVLTree* remove (int x);
 
 	/* print
 	· Prints the tree to console*/
@@ -44,6 +44,11 @@ private:
 	· Balances the tree according to AVL invariants.
 	· Returns the root of the new balanced tree*/
 	AVLTree* balance ();
+
+	/* removeMin
+	· Recursively reassigns children of the tree t when deleting nodes.
+	· Returns the root of the new tree.*/
+	AVLTree* removeMin(AVLTree *l, AVLTree *r);
 
 	/* maxHeight
 	· Returns the height of the heighest tree*/
