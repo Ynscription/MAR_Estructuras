@@ -81,19 +81,13 @@ AVLTree* AVLTree::remove (int x) {
 	else if (x > value)
 		tgt = &right;
 	else {
-		if (right == NULL) {
-			ret = left;
-			left = NULL;
-		}else if (left == NULL){
-			ret = right;
-			right = NULL;
-		}else {
-			AVLTree* l = left;
-			AVLTree* r = right;
-			left = NULL;
-			right = NULL;
-			ret = removeMin(l, r);
-		}
+
+		AVLTree* l = left;
+		AVLTree* r = right;
+		left = NULL;
+		right = NULL;
+		ret = removeMin(l, r);
+
 		delete (this);
 		return ret;
 	}
@@ -184,6 +178,16 @@ AVLTree* AVLTree::balance () {
 · Recursively reassigns children of the tree t when deleting nodes.
 · Returns the root of the new tree.*/
 AVLTree* AVLTree::removeMin(AVLTree *l, AVLTree *r) {
+	AVLTree* root = NULL;
+	AVLTree** newChild;
+	int hl, hr;
+	hl = getHeight(l);
+	hr = getHeight(r);
+	if (hl >= hr) {
+		root = l;
+		
+
+	}
 
 }
 
