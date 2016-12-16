@@ -19,20 +19,24 @@ public:
 	· Destructor frees all memory of the tree recursively, effectively destroying it and its children.*/
 	~AVLTree ();
 
+	//TODO Extract from class to break encapsluation
 	/* copy
 	· Returns an independent copy of this tree. Useful, since deleting a tree will delete all references to it*/
 	AVLTree* copy ();
 
+	//TODO Extract from class to break encapsluation
 	/* insert
 	· Inserts the element x into the tree as a new node, the new tree balanced.
 	· Returns the new tree, or NULL if the element x was already present in the tree.*/
 	AVLTree* insert (int x);
 
+	//TODO Extract from class to break encapsluation
 	/* remove
 	· Removess the element x from the tree and its node, returning the success of the operation.
 	· Returns -1 if the element x was not found in the tree, or 0 otherwise*/
 	AVLTree* remove (int x);
 
+	//TODO Extract from class to break encapsluation
 	/* print
 	· Prints the tree to console*/
 	void print(int level);
@@ -40,25 +44,28 @@ public:
 private:
 	int moved; //Flag to determine if this node was moved during balancing, to recalculate its height.
 
+	//TODO Extract from class to break encapsluation
 	/* balance
 	· Balances the tree according to AVL invariants.
 	· Returns the root of the new balanced tree*/
 	AVLTree* balance ();
 
-	/* removeMin
-	· Recursively reassigns children of the tree t when deleting nodes.
-	· Returns the root of the new tree.*/
-	AVLTree* removeMin(AVLTree *l, AVLTree *r);
-
+	//TODO Extract from class to break encapsluation
 	/* maxHeight
 	· Returns the height of the heighest tree*/
 	int maxHeight (AVLTree *t1, AVLTree *t2);
 
+	//TODO Extract from class to break encapsluation
 	/* height
 	· Returns the height of the tree t. If t is NULL returns 0.*/
 	int getHeight (AVLTree* t);
 
 };
+
+/* removeMin
+· Finds the best node to move to the root, wich was just deleted.
+· Returns the root of the new tree.*/
+AVLTree* removeMin(AVLTree *t);
 
 
 #endif /* _MAR_AVLTREE_H */

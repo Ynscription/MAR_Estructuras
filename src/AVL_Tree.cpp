@@ -73,6 +73,9 @@ AVLTree* AVLTree::insert (int x) {
 · Removess the element x from the tree and its node, returning the success of the operation.
 · Returns -1 if the element x was not found in the tree, or 0 otherwise*/
 AVLTree* AVLTree::remove (int x) {
+	printf("Removing at:\n");
+	print(0);
+	printf("\n");
 	AVLTree* ret = this;
 	AVLTree** tgt;
 	*tgt = NULL;
@@ -86,7 +89,9 @@ AVLTree* AVLTree::remove (int x) {
 		AVLTree* r = right;
 		left = NULL;
 		right = NULL;
-		ret = removeMin(l, r);
+
+		ret = removeMin(this);
+		ret = ret->balance();
 
 		delete (this);
 		return ret;
@@ -174,20 +179,12 @@ AVLTree* AVLTree::balance () {
 
 }
 
+//TODO Extract from class to break encapsluation
 /* removeMin
-· Recursively reassigns children of the tree t when deleting nodes.
+· Finds the best node to move to the root, wich was just deleted.
 · Returns the root of the new tree.*/
-AVLTree* AVLTree::removeMin(AVLTree *l, AVLTree *r) {
-	AVLTree* root = NULL;
-	AVLTree** newChild;
-	int hl, hr;
-	hl = getHeight(l);
-	hr = getHeight(r);
-	if (hl >= hr) {
-		root = l;
-		
+AVLTree* removeMin(AVLTree *t) {
 
-	}
 
 }
 
