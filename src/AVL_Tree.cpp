@@ -11,11 +11,11 @@ AVLTree *right; //The left child of this tree. If this tree has no left child it
 */
 
 
-// PUBLIC
+// PUBLIC=======================================================================================
 /*Constructor
 · Constructor creates an AVL tree with l as left child, r as right child and x as the root value.
 · Calculates the height of this tree base on the heights of the children*/
-AVLTree::AVLTree (AVLTree *l, int x, AVLTree *r) {
+AVLTree::AVLTree (AVLTree* l, int x, AVLTree* r) {
 	left = l;
 	right = r;
 	value = x;
@@ -31,109 +31,83 @@ AVLTree::~AVLTree () {
 	right = NULL;
 }
 
-/*Copy
-· Returns an independent copy of this tree. Useful, since deleting a tree will delete all references to it*/
-AVLTree* AVLTree::copy () {
-	AVLTree *l = NULL; //The left child of the new tree
-	if (left != NULL) //If the left child is NULL we can not copy it
-		l = left-> copy();
-
-	AVLTree *r = NULL; //The right child of the new tree
-	if (right != NULL) //If the right child is NULL we can not copy it
-		r = right->copy();
-
-	return new AVLTree (l, value, r);
-}
-
+//BASIC FUNCTIONS=======================================================================================
 /* insert
 · Inserts the element x into the tree as a new node, the new tree balanced.
-· Returns the new tree, or NULL if the element x was already present in the tree.*/
-AVLTree* AVLTree::insert (int x) {
-	AVLTree **tgt;
+· Returns the new tree.*/
+AVLTree* insert (int x, AVLTree* tree) {
+	AVLTree** tgt = NULL;
 	AVLTree* ret = NULL;
 
-	if (x > value) //If the value of x is greater than the value of this tree, then it must be inserted in the right child
-		tgt = &right;
-	else if (x < value)	//Otherwise the value of x is smaller than the value of this tree, so it must be inserted in the left child
-		tgt = &left;
+	if (x > tree->value) //If the value of x is greater than the value of this tree, then it must be inserted in the right child
+		tgt = &(tree->right);
+	else if (x < tree->value)	//Otherwise the value of x is smaller than the value of this tree, so it must be inserted in the left child
+		tgt = &(tree->left);
+	else		//If the vallue of x is equal to the value of this tree, we return this tree with no changes.
+		return tree;
 
 	if (*tgt == NULL) { //If the child is NULL then creates a new child with value x
 		*tgt = new AVLTree (NULL, x, NULL);
-		ret = this;
+		ret = tree;
 
-	}else {	//If the child is not NULL inserts the value x in the child, and then balances the child.
-		*tgt = (*tgt)->insert(x);
-		ret = balance();
+	}else {	//If the child is not NULL inserts the value x in the child, and then balances the tree.
+		*tgt = insert(x, *tgt);
+		ret = balance(tree);
 	}
-	height = maxHeight (left, right) + 1;
+	tree->height = maxHeight (tree->left, tree->right) + 1;
 	return ret;
 }
 
 /* remove
-· Removess the element x from the tree and its node, returning the success of the operation.
+· Removes the element x from the tree and its node, returning the success of the operation.
 · Returns -1 if the element x was not found in the tree, or 0 otherwise*/
-AVLTree* AVLTree::remove (int x) {
-	printf("Removing at:\n");
-	print(0);
-	printf("\n");
-	AVLTree* ret = this;
+AVLTree* remove (int x, AVLTree* tree) {
+	AVLTree* ret = tree;
 	AVLTree** tgt;
 	*tgt = NULL;
-	if (x < value)
-		tgt = &left;
-	else if (x > value)
-		tgt = &right;
+	if (x < tree->value)
+		tgt = &(tree->left);
+	else if (x > tree->value)
+		tgt = &(tree->right);
 	else {
 
-		AVLTree* l = left;
-		AVLTree* r = right;
-		left = NULL;
-		right = NULL;
+		AVLTree* target;
+		if (getHeight(tree->left) >= getHeight (tree->right)) {
+			tree->value = removeMin (tree->left, 0);
+		}else {
+			tree->value = removeMin (tree->right, 1);
+		}
+		tree->moved = true;
+		ret = balance(tree);
 
-		ret = removeMin(this);
-		ret = ret->balance();
-
-		delete (this);
 		return ret;
 	}
 
 	if (*tgt  != NULL){
-		*tgt = (*tgt)->remove(x);
-		ret = balance();
+		*tgt = remove(x, *tgt);
+		ret = balance(tree	);
 	}
 	return ret;
 }
 
-//TODO DELETE THIS!!!!!!!! (Or make it properly with a queue, whatever suits.)
-/* print
-· Prints the tree to console*/
-void AVLTree::print(int level) {
-	printf("%d: {%d}, h: %d\n", level, value, height);
-	if (left != NULL)
-		left->print (level+1);
-	if (right != NULL)
-		right->print (level+1);
-}
 
-
-// PRIVATE
+//AUXILIAR FUNCTIONS=======================================================================================
 /* balance
 · Balances the tree according to AVL invariants.
 · Returns the root of the new balanced tree*/
-AVLTree* AVLTree::balance () {
-	AVLTree *root = this;
-
+AVLTree* balance (AVLTree* tree) {
+	AVLTree* root = tree;
 	int hl, hr;
-	hl = getHeight (left);	//The height of the left child of this tree
-	hr = getHeight (right);	//The height of the right child of this tree
+	hl = getHeight (tree->left);	//The height of the left child of this tree
+	hr = getHeight (tree->right);	//The height of the right child of this tree
 
 	if (hl - hr > 1) { //If the left child is 2 nodes, or more, higher than the right child, a left rotation is required
-		if (hr == getHeight(left->left)) { //LR rotation
-			root = left->right;
-			left->right = root->left;
-			root->left =left;
-			left = root->right;
-			root->right = this;
+		if (hr == getHeight(tree->left->left)) { //LR rotation
+			root = tree->left->right;
+			tree->left->right = root->left;
+			root->left = tree->left;
+			tree->left = root->right;
+			root->right = tree;
 
 			//Set the moved flags to 1 in order to update the height.
 			root->moved = 1;
@@ -142,9 +116,9 @@ AVLTree* AVLTree::balance () {
 
 		}
 		else {	//LL rotation
-			root = left;
-			left = root->right;
-			root->right = this;
+			root = tree->left;
+			tree->left = root->right;
+			root->right = tree;
 
 			//Set the moved flags to 1 in order to update the height.
 			root->moved = 1;
@@ -153,12 +127,12 @@ AVLTree* AVLTree::balance () {
 		}
 	}
 	else if (hl - hr < -1) { //If the right child is 2 nodes, or more, higher than the left child, a right rotation is required
-		if (hl == getHeight(right->right)) { //RL
-			root = right->left;
-			right->left = root->right;
-			root->right =right;
-			right = root->left;
-			root->left = this;
+		if (hl == getHeight(tree->right->right)) { //RL
+			root = tree->right->left;
+			tree->right->left = root->right;
+			root->right =tree->right;
+			tree->right = root->left;
+			root->left = tree;
 
 			//Set the moved flags to 1 in order to update the height.
 			root->moved = 1;
@@ -166,9 +140,9 @@ AVLTree* AVLTree::balance () {
 			root->right->moved = 1;
 		}
 		else { //RR
-			root = right;
-			right = root->left;
-			root->left = this;
+			root = tree->right;
+			tree->right = root->left;
+			root->left = tree;
 
 			//Set the moved flags to 1 in order to update the height.
 			root->moved = 1;
@@ -179,18 +153,49 @@ AVLTree* AVLTree::balance () {
 
 }
 
-//TODO Extract from class to break encapsluation
 /* removeMin
-· Finds the best node to move to the root, wich was just deleted.
-· Returns the root of the new tree.*/
-AVLTree* removeMin(AVLTree *t) {
+· Finds the best value to ovewrite the root, and deletes the node.
+· Returns the value.*/
+int removeMin(AVLTree* t, int lr) {
+	AVLTree* target = NULL;
+	int ret;
+
+	if (!lr) { //This is the left tree, so we have to descend to the right
+		target = t->right;
+	}else {
+		target = t->left;
+	}
+
+	if (target == NULL) {		//If this tree does not have a target child, then this is the best value, return this value, and delete this tree.
+		ret = t->value;
+		delete (t);
+	}else {
+		ret = removeMin(target, lr);
+		t->moved = true;
+	}
+
+	return ret;
+}
 
 
+//USEFUL FUNCTIONS=======================================================================================
+/*Copy
+· Returns an independent copy of this tree. Useful, since deleting a tree will delete all references to it*/
+AVLTree* copy (AVLTree* tree) {
+	AVLTree* l = NULL; //The left child of the new tree
+	if (tree->left != NULL) //If the left child is NULL we can not copy it
+		l = copy(tree->left);
+
+	AVLTree *r = NULL; //The right child of the new tree
+	if (tree->right != NULL) //If the right child is NULL we can not copy it
+		r = copy(tree->right);
+
+	return new AVLTree (l, tree->value, r);
 }
 
 /* maxHeight
 · Returns the height of the heighest tree*/
-int AVLTree::maxHeight (AVLTree *t1, AVLTree *t2) {
+int maxHeight (AVLTree* t1, AVLTree* t2) {
 	int h1, h2;
 	h1 = getHeight (t1);
 	h2 = getHeight (t2);
@@ -203,7 +208,7 @@ int AVLTree::maxHeight (AVLTree *t1, AVLTree *t2) {
 
 /* height
 · Returns the height of the tree t. If t is NULL returns 0.*/
-int AVLTree::getHeight (AVLTree* t) {
+int getHeight (AVLTree* t) {
 	if (t == NULL)
 		return 0;
 	if (t->moved) {
@@ -211,4 +216,15 @@ int AVLTree::getHeight (AVLTree* t) {
 		t->moved = 0;
 	}
 	return t->height;
+}
+
+//TODO DELETE THIS!!!!!!!! (Or make it properly with a queue, whatever suits.)
+/* print
+· Prints the tree to console*/
+void printTree(int level, AVLTree* tree) {
+	printf("%d: {%d}, h: %d\n", level, tree->value, tree->height);
+	if (tree->left != NULL)
+		printTree (level+1, tree->left);
+	if (tree->right != NULL)
+		printTree (level+1, tree->right);
 }
